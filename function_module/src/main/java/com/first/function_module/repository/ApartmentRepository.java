@@ -19,8 +19,8 @@ public interface ApartmentRepository extends JpaRepository<ApartmentEntity, Long
 
    public List<ApartmentEntity> searchApartmentEntitiesByCountOfPeople(Double countOfPeople); //sping data generation
 
-   @Query (nativeQuery = true,value = "Select * from apartment_info where count_of_people = :countOfPeople")
-   public List<ApartmentEntity> searchApartmentEntitiesWithCountOfPeopleNative(Double countOfPeople); //native query
+//   @Query (nativeQuery = true,value = "Select * from apartment_info where count_of_people = :countOfPeople")
+//   public List<ApartmentEntity> searchApartmentEntitiesWithCountOfPeopleNative(Double countOfPeople); //native query
 
    @Query(value = "Select a from ApartmentEntity a where a.countOfPeople = :countOfPeople")
    public List<ApartmentEntity> searchApartmentEntitiesWithCountOfPeopleJPQL(Double countOfPeople); //JPQL query

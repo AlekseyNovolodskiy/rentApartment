@@ -20,4 +20,5 @@ public class CheckValidTokenServiceImpl implements CheckValidTokenService {
         return userRepository.findUserInfoEntityByToken(token)
                 .orElseThrow(() -> new UserException(TOKEN_MESSAGE_EXCEPTION, 600));
     }
+
 }

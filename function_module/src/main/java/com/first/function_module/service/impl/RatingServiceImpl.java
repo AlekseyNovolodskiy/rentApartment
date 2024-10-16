@@ -34,8 +34,6 @@ public class RatingServiceImpl implements RatingService {
     public RateEntity prepareRatingEntity(ApartmentEntity apartmentEntity, Integer rating, String comments) {
 
         RateEntity rateEntity = new RateEntity();
-
-
         rateEntity.setApartmentEntity(apartmentEntity);
         rateEntity.setRating(rating);
         rateEntity.setComments(comments);

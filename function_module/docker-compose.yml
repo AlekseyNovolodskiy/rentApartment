@@ -1,11 +1,11 @@
 version: "3.9"
 
 services:
-  pg_db:
+  apartment_db:
     image: postgres
     restart: always
     environment:
-      - POSTGRES_DB=avito_db
+      - POSTGRES_DB=rent_apartment_db
       - POSTGRES_USER=docker
       - POSTGRES_PASSWORD=docker
     volumes:

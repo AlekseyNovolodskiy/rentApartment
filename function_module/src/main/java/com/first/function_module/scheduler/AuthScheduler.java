@@ -2,7 +2,6 @@ package com.first.function_module.scheduler;
 
 import com.first.function_module.entity.UserInfoEntity;
 import com.first.function_module.repository.UserRepository;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -27,8 +26,8 @@ public class AuthScheduler {
         for (UserInfoEntity user : users) {
             log.info("проверка токена пользователя "+ user.getNickname());
             String token = user.getToken();
-            LocalDateTime tokeTime = parseTokenInfo(token);
-            if(checkDate(tokeTime)){
+            LocalDateTime tokenTime = parseTokenInfo(token);
+            if(checkDate(tokenTime)){
                 log.info("токен пользователя "+ user.getNickname()+ " был удален");
                 user.setToken(null);
                 userRepository.save(user);

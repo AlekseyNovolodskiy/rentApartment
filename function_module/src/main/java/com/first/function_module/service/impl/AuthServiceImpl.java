@@ -1,6 +1,7 @@
 package com.first.function_module.service.impl;
 
 import com.first.function_module.entity.UserInfoEntity;
+import com.first.function_module.exception.UserException;
 import com.first.function_module.model.dto.UserAuthDto;
 import com.first.function_module.model.dto.UserInfoDto;
 import com.first.function_module.repository.UserRepository;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import static com.first.function_module.util.Base64EncodeDecode.decode;
+import static com.first.function_module.util.Base64EncodeDecode.encode;
 import static java.util.Objects.isNull;
 
 @RequiredArgsConstructor
@@ -26,7 +29,8 @@ public class AuthServiceImpl implements AuthService {
 
         UserInfoEntity userByNickname = userRepository.findUserInfoEntityByNickname(userInfoDto.getNickname());
         if (!isNull(userByNickname)) {
-            return "Данный пользователь уже существует";
+            throw new UserException("Данный пользователь уже существует");
+
         }
         UserInfoEntity userByLogin = userRepository.findUserInfoEntityByLogin(userInfoDto.getLogin());
         if (!isNull(userByLogin)) {
@@ -44,7 +48,7 @@ public class AuthServiceImpl implements AuthService {
         if (isNull(userByLogin)) {
             return "Данного пользователя не существует";
         }
-        if (!userAuthDto.getPassword().equals(userByLogin.getPassword())) {
+        if (!userAuthDto.getPassword().equals(decode(userByLogin.getPassword()))) {
             return "Неверный пароль";
         }
 
@@ -55,13 +59,14 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private String generateToken() {
-        return UUID.randomUUID().toString() + "|" + LocalDateTime.now().plusDays(1L);
+        return UUID.randomUUID() + "|" + LocalDateTime.now().plusDays(1L);
 
     }
 
-
+//todo метод перенести в mapstruckt
     private UserInfoEntity prepareUserSaveToBase(UserInfoDto userInfoDto) {
 
-        return new UserInfoEntity(userInfoDto.getPassword(), userInfoDto.getLogin(), userInfoDto.getNickname());
+
+        return new UserInfoEntity(encode(userInfoDto.getPassword()), userInfoDto.getLogin(), userInfoDto.getNickname());
     }
 }

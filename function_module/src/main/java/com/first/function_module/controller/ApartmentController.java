@@ -7,7 +7,9 @@ import com.first.function_module.service.RatingService;
 import com.first.function_module.service.RentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 import static com.first.function_module.controller.ControllerConstants.*;
@@ -40,7 +42,7 @@ public class ApartmentController {
     public String registerApartment(@RequestHeader String token,
                                     @RequestBody ApartmentDto apartmentDto) {
         UserInfoEntity userInfoEntity = checkValidTokenService.checkTokenForVAlid(token);
-        return rentService.registerApartment(apartmentDto,userInfoEntity);
+        return rentService.registerApartment(apartmentDto, userInfoEntity);
     }
 
     @GetMapping(ADD_THE_COMMENT)
@@ -51,9 +53,15 @@ public class ApartmentController {
     }
 
     @GetMapping("/show")
-    public ApartmentDto showApartment(@RequestParam Long ID) {
+    public ApartmentDto showApartment(@RequestParam Long id) {
 
-        return rentService.showApartment(ID);
+        return rentService.showApartment(id);
+    }
+
+    @PostMapping("/addphoto")
+    public String AddPhoto(@RequestParam Long id, @RequestParam MultipartFile multipartFile) throws IOException {
+
+        return rentService.addphoto(id, multipartFile);
     }
 
 

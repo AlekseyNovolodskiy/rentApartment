@@ -1,21 +1,22 @@
 package com.first.function_module.service.impl;
 
-import com.first.function_module.entity.AddressEntity;
-import com.first.function_module.entity.ApartmentEntity;
-import com.first.function_module.entity.RateEntity;
-import com.first.function_module.entity.UserInfoEntity;
+import com.first.function_module.entity.*;
 import com.first.function_module.exception.ApartmentException;
 import com.first.function_module.mapper.RentApartmentMapper;
 import com.first.function_module.model.dto.ApartmentDto;
 import com.first.function_module.repository.AddressRepository;
 import com.first.function_module.repository.ApartmentRepository;
+import com.first.function_module.repository.PhotoRepository;
 import com.first.function_module.repository.RatingRepository;
 import com.first.function_module.repository.dao.ApartmentDao;
+import com.first.function_module.service.integrated.IntegrationService;
 import com.first.function_module.service.RentService;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 
@@ -26,14 +27,13 @@ import static java.util.Objects.isNull;
 @Service
 public class RentServiceImpl implements RentService {
 
+    private final IntegrationService integrationService;
     private final RatingRepository ratingRepository;
-
     private final ApartmentRepository apartmentRepository;
-
     private final RentApartmentMapper mapper;
-
     private final ApartmentDao apartmentDao;
     private final AddressRepository addressRepository;
+    private final PhotoRepository photoRepository;
 
     public static final String APARTMENTS_NOT_FOUND = "апартаментов по условию поиска не обнаружено";
 
@@ -54,9 +54,7 @@ public class RentServiceImpl implements RentService {
 
 // поиск по количеству людей
         if (!isNull(countOfPeople) && isNull(area) && isNull(cost)) {
-//            List<ApartmentEntity> apartmentEntities = apartmentRepository.searchApartmentEntitiesByCountOfPeople(countOfPeople);
-//            List<ApartmentEntity> apartmentEntities = apartmentRepository.searchApartmentEntitiesWithCountOfPeopleNative(countOfPeople);
-//            List<ApartmentEntity> apartmentEntities = findApartmentByCriteria(countOfPeople);
+
             List<ApartmentEntity> apartmentEntities = apartmentRepository.searchApartmentEntitiesWithCountOfPeopleJPQL(countOfPeople);
             apartmentDao.findApartmentByCountOfPeople(countOfPeople);
             if (apartmentEntities.isEmpty()) {
@@ -68,6 +66,7 @@ public class RentServiceImpl implements RentService {
 
 // поиск по AREA
         if (isNull(countOfPeople) && !isNull(area) && isNull(cost)) {
+
             List<ApartmentEntity> apartmentEntities = apartmentRepository.searchApartmentEntitiesByArea(area);
 //            apartmentEntities.isEmpty()
             if (apartmentEntities.isEmpty()) {
@@ -78,6 +77,7 @@ public class RentServiceImpl implements RentService {
 
 // поиск по стоимости
         if (isNull(countOfPeople) && isNull(area) && !isNull(cost)) {
+
             List<ApartmentEntity> apartmentEntities = apartmentRepository.searchApartmentEntitiesByCost(cost);
             if (apartmentEntities.isEmpty()) {
                 throw new ApartmentException(APARTMENTS_NOT_FOUND, 600);
@@ -87,6 +87,7 @@ public class RentServiceImpl implements RentService {
 
 // поиск по трем показателям
         if (!isNull(countOfPeople) && !isNull(area) && !isNull(cost)) {
+
             List<ApartmentEntity> apartmentEntities = apartmentRepository.searchApartmentEntitiesByCostAndAreaAndCountOfPeople(cost, area, countOfPeople);
             if (apartmentEntities.isEmpty()) {
                 throw new ApartmentException(APARTMENTS_NOT_FOUND, 600);
@@ -129,9 +130,6 @@ public class RentServiceImpl implements RentService {
         return mapper.apartmentEntityToApartmentDto(apartmentEntities);
     }
 
-//    private List<ApartmentDto> mapListentityToApartmnetDTO(List<ApartmentEntity> apartmentEntities) {
-//      return   apartmentEntities.stream().map(apartmentEntity -> mapper.apartmentEntityToApartmentDtowithRating(apartmentEntity)).toList();
-//    }
 
     public ApartmentDto showApartment(Long id) {
         ApartmentEntity apartment = apartmentRepository.findById(id)
@@ -145,13 +143,33 @@ public class RentServiceImpl implements RentService {
         for (RateEntity r : rateList) {
             temp = temp + r.getRating();
         }
-//        for (int i = 0; i < rateList.size(); i++) {
-//            temp = (int) (temp + apartmentDto.getAvgRate());
-//        }
+
         double avg = temp / rateList.size();
         apartmentDto.setAvgRate(avg);
 
         return apartmentDto;
+    }
+
+    @Override
+    public String checkProductVersion() {
+        return integrationService.integrationWithProduct();
+    }
+
+
+    @Override
+    public List<ApartmentDto> checkByLocation(String latitude, String longitude) {
+        return List.of();
+    }
+
+
+    @Override
+    public String addphoto(Long id, MultipartFile multipartFile) throws IOException {
+
+        ApartmentEntity apartmentEntity = apartmentRepository.findById(id).get();
+        PhotoEntity photoEntity = new PhotoEntity((multipartFile.getBytes()), apartmentEntity);
+        photoRepository.save(photoEntity);
+
+        return "фото добавлено";
     }
 
 
@@ -164,7 +182,7 @@ public class RentServiceImpl implements RentService {
 
     @Override
     public String registerApartment(ApartmentDto apartmentDto, UserInfoEntity userInfoEntity) {
-//        ApartmentEntity apartment = apartmentRepository.findApartmentEntitiesByArea(apartmentDto.getArea());
+
         AddressEntity addressEntityByParam = addressRepository.searchAddressEntitiesByParam(apartmentDto.getStreet(), apartmentDto.getBuildingNumber());
 
         if (!isNull(addressEntityByParam)) {
@@ -175,7 +193,7 @@ public class RentServiceImpl implements RentService {
         apartmentRepository.save(addressEntity.getApartmentEntity());
         addressRepository.save(addressEntity);
 
-        return userInfoEntity.getNickname()+ " вы зарегистрировали новые апартаменты";
+        return userInfoEntity.getNickname() + " вы зарегистрировали новые апартаменты";
 
     }
 

@@ -4,14 +4,25 @@ import com.first.function_module.entity.UserInfoEntity;
 import com.first.function_module.model.dto.ApartmentDto;
 import com.first.function_module.model.dto.UserAuthDto;
 import com.first.function_module.model.dto.UserInfoDto;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface RentService {
-    public List<ApartmentDto> searchApartment (Double countOfPeople, Double area, Double cost);
 
-    public  String rentApartment(ApartmentDto apartmentDto);
+    List<ApartmentDto> searchApartment(Double countOfPeople, Double area, Double cost);
 
-    public  String registerApartment(ApartmentDto apartmentDto, UserInfoEntity userInfoEntity);
-    public ApartmentDto showApartment(Long id);
+    String rentApartment(ApartmentDto apartmentDto);
+
+    String registerApartment(ApartmentDto apartmentDto, UserInfoEntity userInfoEntity);
+
+    ApartmentDto showApartment(Long id);
+
+    String checkProductVersion();
+
+    List<ApartmentDto> checkByLocation(String latitude, String longitude);
+
+    String addphoto(Long id, MultipartFile multipartFile) throws IOException;
+
 }

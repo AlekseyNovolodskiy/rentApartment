@@ -44,6 +44,8 @@ public class ApartmentEntity {
     @OneToMany(mappedBy="apartmentEntity", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<RateEntity> rates;
 
+    @OneToMany(mappedBy="apartmentEntity", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<PhotoEntity> photos;
 
     public ApartmentEntity(Double area, Double countOfPeople, String description, Double cost, LocalDateTime timeOfStartRent, LocalDateTime timeOfRent) {
         this.area = area;
