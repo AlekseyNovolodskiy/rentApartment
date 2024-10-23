@@ -28,16 +28,25 @@ public class UserInfoEntity {
     @Column(name = "login")
     private String login;
 
+    @Column(name = "email")
+    private String email;
+
     @Column(name = "nick_name")
     private String nickname;
 
     @Column(name = "token")
     private String token;
 
-    public UserInfoEntity(String password, String login, String nickname) {
+    @Column(name ="verification")
+    private String verification;
+
+    public UserInfoEntity(String password, String login, String email, String nickname, String verification) {
         this.dateRegistration = LocalDateTime.now();
         this.password = password;
         this.login = login;
+        this.email = email;
         this.nickname = nickname;
+        this.verification = verification;
+
     }
 }

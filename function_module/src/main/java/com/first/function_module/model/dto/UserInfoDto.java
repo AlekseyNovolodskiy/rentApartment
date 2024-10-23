@@ -9,4 +9,5 @@ public class UserInfoDto {
     private String password;
     private String login;
     private String  nickname;
+    private String email;
 }

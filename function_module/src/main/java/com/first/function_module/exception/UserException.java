@@ -6,10 +6,10 @@ import lombok.Data;
 public class UserException extends RuntimeException {
     private int exceptionCode;
 
-    public UserException(String message, int exceptionCode) {
-        super(message);
-        this.exceptionCode = exceptionCode;
-    }
+//    public UserException(String message, int exceptionCode) {
+//        super(message);
+//        this.exceptionCode = exceptionCode;
+//    }
 
 
     public UserException(String message) {

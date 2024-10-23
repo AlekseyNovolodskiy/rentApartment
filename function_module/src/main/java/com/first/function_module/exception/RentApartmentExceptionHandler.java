@@ -14,7 +14,7 @@ public class RentApartmentExceptionHandler {
     }
     @ExceptionHandler(UserException.class)
     public ResponseEntity<?> catchException(UserException e){
-        return ResponseEntity.status(e.getExceptionCode()).body(e.getMessage());
+        return ResponseEntity.ok(e.getMessage());
 
     }
 
