@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Data
@@ -39,6 +40,10 @@ public class UserInfoEntity {
 
     @Column(name ="verification")
     private String verification;
+
+    @OneToMany(mappedBy = "userInfoEntity", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<BookingEntity> booking;
+
 
     public UserInfoEntity(String password, String login, String email, String nickname, String verification) {
         this.dateRegistration = LocalDateTime.now();

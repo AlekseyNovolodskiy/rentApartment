@@ -1,30 +1,33 @@
 package com.first.function_module.controller;
 
+import com.first.function_module.model.dto.ApartmentDto;
 import com.first.function_module.service.RentService;
 import com.first.function_module.service.integrated.IntegrationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
+@RequestMapping("/integration")
 public class IntegrationController {
+
+    private final RentService rentService;
 
     private final IntegrationService integrationService;
 
-    @GetMapping("/product_integration")
-    public String integrationWithProduct() {
-        return integrationService.integrationWithProduct();
-    }
 
     @GetMapping("/integration_with_two_parmaters")
-    public String integrationWithParameres(@RequestParam String name, @RequestParam String number, @RequestHeader String token) {
-        return integrationService.testSeconfMethod(name, number, token);
+    public List<String> integrationWithParameres(@RequestParam String name, @RequestParam String number, @RequestHeader String token) {
+        return null;
     }
-   @GetMapping("/geolocation")
-    public String getInfoByLocation(@RequestParam String latitude, @RequestParam String longitude){
-        return "";
-   }
+
+    @GetMapping("/geolocation")
+    public List<ApartmentDto> getInfoByLocation(@RequestParam String latitude, @RequestParam String longitude) {
+
+        return rentService.checkByLocation(latitude, longitude);
+    }
+
+
 }

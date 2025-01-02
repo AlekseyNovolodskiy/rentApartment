@@ -2,8 +2,10 @@ package com.first.function_module.scheduler;
 
 import com.first.function_module.entity.UserInfoEntity;
 import com.first.function_module.repository.UserRepository;
+import com.first.function_module.service.impl.AuthServiceImpl;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -11,28 +13,29 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Slf4j
 @Service
 @EnableScheduling
 @RequiredArgsConstructor
 public class AuthScheduler {
 
+    private Logger logger = LoggerFactory.getLogger(AuthScheduler.class);
     private final UserRepository userRepository;
 
-    @Scheduled(fixedDelay = 600000)
+
+    @Scheduled(fixedDelay = 60000)
     private void checkValidToken (){
-        log.info("планировщик актуальности токена начал работу");
+        logger.info("планировщик актуальности токена начал работу");
         List<UserInfoEntity> users = userRepository.findUserInfoEntitiesByTokenIsNotNull();
         for (UserInfoEntity user : users) {
-            log.info("проверка токена пользователя "+ user.getNickname());
+            logger.info("проверка токена пользователя "+ user.getNickname());
             String token = user.getToken();
             LocalDateTime tokenTime = parseTokenInfo(token);
             if(checkDate(tokenTime)){
-                log.info("токен пользователя "+ user.getNickname()+ " был удален");
+                logger.info("токен пользователя "+ user.getNickname()+ " был удален");
                 user.setToken(null);
                 userRepository.save(user);
             }
-            log.info("планировщик закончил свою работу");
+            logger.info("планировщик закончил свою работу");
 
         }
     }

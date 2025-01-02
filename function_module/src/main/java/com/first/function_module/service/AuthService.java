@@ -7,14 +7,12 @@ import java.util.Map;
 
 
 public interface AuthService {
-    public String registrationUser (UserInfoDto userInfoDto);
 
-    public  String authorizationUser(UserAuthDto userAuthDto);
+    String registrationUser(UserInfoDto userInfoDto);
 
-    String checkEmail (String verifNumber);
+    String authorizationUser(UserAuthDto userAuthDto);
 
-    String verifyMethodForLink(Map<String,String> responceMap);
-
+    String verifyMethodForLink(String login, String code);
 
 
 }

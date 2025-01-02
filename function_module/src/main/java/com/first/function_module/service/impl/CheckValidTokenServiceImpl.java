@@ -13,12 +13,27 @@ import org.springframework.stereotype.Service;
 @Service
 public class CheckValidTokenServiceImpl implements CheckValidTokenService {
     private final UserRepository userRepository;
-    public static final String TOKEN_MESSAGE_EXCEPTION = "Регистрация Апартаментов доступна зарегистрированным пользователям";
+    public static final String TOKEN_APARTMENT_REGISTRATION_EXCEPTION = "Регистрация апартаментов доступна зарегистрированным пользователям";
+    public static final String TOKEN_APARTMENT_BOOKING_EXCEPTION = "Аренда апартаментов доступна зарегистрированным пользователям";
+    public static final String TOKEN_APARTMENT_COMMENT_EXCEPTION = "Оставлять коментарии могут только зарегистрированные пользователи";
 
     @Override
-    public UserInfoEntity checkTokenForVAlid(String token) {
-        return userRepository.findUserInfoEntityByToken(token)
-                .orElseThrow(() -> new UserException(TOKEN_MESSAGE_EXCEPTION));
+    public UserInfoEntity checkTokenForVAlid(String token,String apartmentMethod) {
+
+        if(apartmentMethod.equals("registration")){
+            return userRepository.findUserInfoEntityByToken(token)
+                    .orElseThrow(() -> new UserException(TOKEN_APARTMENT_REGISTRATION_EXCEPTION));
+        }
+        if (apartmentMethod.equals("addComment")){
+            return userRepository.findUserInfoEntityByToken(token)
+                    .orElseThrow(() -> new UserException(TOKEN_APARTMENT_COMMENT_EXCEPTION));
+        }
+        if (apartmentMethod.equals("rentApartment")){
+            return userRepository.findUserInfoEntityByToken(token)
+                    .orElseThrow(() -> new UserException(TOKEN_APARTMENT_BOOKING_EXCEPTION));
+        }
+
+        return null;
     }
 
 }

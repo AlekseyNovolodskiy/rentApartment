@@ -6,16 +6,17 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Data
-@Table(name = "apartment_info")
+@Table(name = "apartment_info",
+        uniqueConstraints= @UniqueConstraint(columnNames = {"area", "count_of_people","description","cost"})
+)
 @NoArgsConstructor
 public class ApartmentEntity {
 
     @Id
-    @SequenceGenerator(name = "apartment_infoSequence", sequenceName = "apartment_info_sequence", allocationSize = 1,initialValue = 3)
+    @SequenceGenerator(name = "apartment_infoSequence", sequenceName = "apartment_info_sequence", allocationSize = 1, initialValue = 3)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "apartment_infoSequence")
     @Column(name = "id", nullable = false)
     private Long id;
@@ -36,18 +37,18 @@ public class ApartmentEntity {
     private LocalDateTime timeOfStartRent;
 
     @Column(name = "time_of_rent")
-    private LocalDateTime timeOfRent;
+    private Integer timeOfRent;
 
-    @OneToOne (mappedBy = "apartmentEntity")
+    @OneToOne(mappedBy = "apartmentEntity")
     private AddressEntity addressEntity;
 
-    @OneToMany(mappedBy="apartmentEntity", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "apartmentEntity", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<RateEntity> rates;
 
-    @OneToMany(mappedBy="apartmentEntity", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "apartmentEntity", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<PhotoEntity> photos;
 
-    public ApartmentEntity(Double area, Double countOfPeople, String description, Double cost, LocalDateTime timeOfStartRent, LocalDateTime timeOfRent) {
+    public ApartmentEntity(Double area, Double countOfPeople, String description, Double cost, LocalDateTime timeOfStartRent, Integer timeOfRent) {
         this.area = area;
         this.countOfPeople = countOfPeople;
         this.description = description;

@@ -5,6 +5,7 @@ import com.first.function_module.entity.RateEntity;
 import com.first.function_module.exception.ApartmentException;
 import com.first.function_module.repository.ApartmentRepository;
 import com.first.function_module.repository.RatingRepository;
+import com.first.function_module.repository.UserRepository;
 import com.first.function_module.service.RatingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,12 +17,13 @@ public class RatingServiceImpl implements RatingService {
 
     private final ApartmentRepository apartmentRepository;
     private final RatingRepository ratingRepository;
+    private final UserRepository userRepository;
     public static final String ADD_COMMENT = "Коментарий добавлен";
     public static final String RATING_MESSAGE_EXCEPTION = "Апартаментов не обнаружено";
 
 
     @Override
-    public String addRating(Long apartmentID, Integer rating, String comments) {
+    public String addRating(Long apartmentID, Integer rating, String comments, String token) {
 
         ApartmentEntity apartment = apartmentRepository.findById(apartmentID)
                 .orElseThrow(() -> new ApartmentException(RATING_MESSAGE_EXCEPTION,600));

@@ -13,13 +13,12 @@ public interface RentService {
 
     List<ApartmentDto> searchApartment(Double countOfPeople, Double area, Double cost);
 
-    String rentApartment(ApartmentDto apartmentDto);
+    String rentApartment(ApartmentDto apartmentDto,UserInfoEntity userInfoEntity);
 
     String registerApartment(ApartmentDto apartmentDto, UserInfoEntity userInfoEntity);
 
     ApartmentDto showApartment(Long id);
 
-    String checkProductVersion();
 
     List<ApartmentDto> checkByLocation(String latitude, String longitude);
 

@@ -6,45 +6,53 @@ import com.first.function_module.model.dto.UserAuthDto;
 import com.first.function_module.model.dto.UserInfoDto;
 import com.first.function_module.repository.UserRepository;
 import com.first.function_module.service.AuthService;
-import com.first.function_module.service.EmailService;
+import com.first.function_module.service.integrated.IntegrationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static com.first.function_module.util.Base64EncodeDecode.decode;
 import static com.first.function_module.util.Base64EncodeDecode.encode;
 import static java.util.Objects.isNull;
 
-@Slf4j
 @RequiredArgsConstructor
 @Service
 public class AuthServiceImpl implements AuthService {
 
+    private Logger logger = LoggerFactory.getLogger(AuthServiceImpl.class);
     private final UserRepository userRepository;
-    private final EmailService emailService;
+    private final IntegrationService integrationService;
+    private final String EMAIL_SENDER_IS_UNACTIVE = "отсутствует доступ к рассылке";
+    public static final String USER_EXIST_EXEPTION = "Данный пользователь уже существует";
+    public static final String YOU_ARE_REGISTERD = "вы зарегистрированы";
+    public static final String USER_NO_EXIST_EXEPTION = "Данного пользователя не существует";
+    public static final String WRONG_PASSWORD = "Неверный пароль";
+    public static final String USER_NOT_FOUND = "Пользователь не найден";
+    public static final String USER_VERIFIED = "Пользователь верифицирован";
 
-    private final static String TEXT_TO_VERIFICATION = "уважаемый пользователь потвердите свой емейл \n " +
-            "перейдите по ссылке \n";
-    private final static String  SUBJEXT_OF_EMAIL_TO_VERIFICATION = "потвердите ваш емейл";
+
+
 
 
     @Override
     public String registrationUser(UserInfoDto userInfoDto) {
 
+
         UserInfoEntity userByNickname = userRepository.findUserInfoEntityByNickname(userInfoDto.getNickname());
         if (!isNull(userByNickname)) {
-            throw new UserException("Данный пользователь уже существует");
+            logger.error(USER_EXIST_EXEPTION);
+            throw new UserException(USER_EXIST_EXEPTION);
 
         }
         UserInfoEntity userByLogin = userRepository.findUserInfoEntitiesByEmail(userInfoDto.getEmail());
         if (!isNull(userByLogin)) {
-            return "Данный пользователь уже существует";
+            logger.error(USER_EXIST_EXEPTION);
+            return USER_EXIST_EXEPTION;
         }
 
         UserInfoEntity userInfoEntity = new UserInfoEntity();
@@ -56,7 +64,8 @@ public class AuthServiceImpl implements AuthService {
         userInfoEntity.setDateRegistration(LocalDateTime.now());
         userInfoEntity.setVerification(generateVerificationNumber());
         userRepository.save(userInfoEntity);
-        return "вы зарегистрированы";
+        logger.info(YOU_ARE_REGISTERD);
+        return YOU_ARE_REGISTERD;
     }
 
 
@@ -64,41 +73,33 @@ public class AuthServiceImpl implements AuthService {
     public String authorizationUser(UserAuthDto userAuthDto) {
         UserInfoEntity userByLogin = userRepository.findUserInfoEntitiesByEmail(userAuthDto.getEmail());
         if (isNull(userByLogin)) {
-            return "Данного пользователя не существует";
+            return USER_NO_EXIST_EXEPTION;
         }
         if (!userAuthDto.getPassword().equals(decode(userByLogin.getPassword()))) {
-            return "Неверный пароль";
+            return WRONG_PASSWORD;
         }
-
-
-        UserInfoEntity userAuth = userRepository.findUserInfoEntitiesByEmail(userAuthDto.getEmail());
-
-        if (!userAuth.getVerification().equals("verified")) {
-            emailService.emailVerification(userAuth.getEmail(),
-                    SUBJEXT_OF_EMAIL_TO_VERIFICATION,
-                    TEXT_TO_VERIFICATION + urlGenerator(userAuth.getLogin(),userAuth.getVerification()));
-        }
-        if (!userAuth.getVerification().equals("verified")) {
-            log.info("Проверьте свой емейл для потверждения аккаунта");
-        }
-
 
         String token = generateToken();
         userByLogin.setToken(token);
         userRepository.save(userByLogin);
+
+        if (!userByLogin.getVerification().equals("verified")) {
+
+            try {
+                integrationService.getIntegrationWithEmail(userByLogin);
+            } catch (Exception e) {
+                throw new UserException(EMAIL_SENDER_IS_UNACTIVE);
+            }
+            return "Проверьте свой емейл для потверждения аккаунта";
+        }
+
         return token;
     }
 
-    @Override
-    public String checkEmail(String verifNumber) {
 
-
-        return "";
-    }
 
     private String generateToken() {
         return UUID.randomUUID() + "|" + LocalDateTime.now().plusDays(1L);
-
     }
 
     private static String generateVerificationNumber() {
@@ -108,35 +109,23 @@ public class AuthServiceImpl implements AuthService {
             x = (int) Math.round(Math.random() * 10);
             verifNuber.append(x);
         }
-
         return verifNuber.toString();
     }
 
-    private String urlGenerator(String login,String stringCode) {
-
-        return "http://localhost:9096/verify?login="+login+"&code=" + stringCode;
-    }
 
     @Override
-    public String verifyMethodForLink(Map<String, String> responceMap) {
+    public String verifyMethodForLink(String login, String code) {
 
-        String code = responceMap.get("code");
-        String login = responceMap.get("login");
-        UserInfoEntity userVerify = userRepository.findUserByLoginAndVerificationNumber(login,code);
-        if(!isNull(userVerify)){
+        UserInfoEntity userVerify = userRepository.findUserByLoginAndVerificationNumber(login, code);
+        if (!isNull(userVerify)) {
             userVerify.setVerification("verified");
             userRepository.save(userVerify);
-        }
-        else return "Пользователь не найден";
+        } else return USER_NOT_FOUND;
 
-        return "Пользователь верифицирован";
+        return USER_VERIFIED;
     }
+
+
 }
 
-//todo метод перенести в mapstruckt
-//    private UserInfoEntity prepareUserSaveToBase(UserInfoDto userInfoDto) {
-//
-//
-//        return new UserInfoEntity(encode(userInfoDto.getPassword()), userInfoDto.getLogin(), userInfoDto.getNickname(), userInfoDto.getEmail(), generateVerificationNumber());
-//    }
 

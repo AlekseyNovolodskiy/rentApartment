@@ -30,32 +30,6 @@ public class ModuleUrlServiceImpl implements ModuleUrlService {
         return byName.getUrl();
     }
 
-    @Override
-    public String productUrlFromFile(String name) {
-        String filePath = "src/main/java/resourses/files/Url.txt";
 
-        String Urlname = "Urlname";
-
-        try {
-            boolean found = findLineInFile(filePath, Urlname);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-       return "";
-    }
-    public  boolean findLineInFile (String filePath, String search) throws IOException {
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (line.contains(search)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 
 }

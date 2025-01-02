@@ -4,19 +4,30 @@ import com.first.function_module.entity.*;
 import com.first.function_module.exception.ApartmentException;
 import com.first.function_module.mapper.RentApartmentMapper;
 import com.first.function_module.model.dto.ApartmentDto;
-import com.first.function_module.repository.AddressRepository;
-import com.first.function_module.repository.ApartmentRepository;
-import com.first.function_module.repository.PhotoRepository;
-import com.first.function_module.repository.RatingRepository;
+import com.first.function_module.model.dto.BookingDto;
+import com.first.function_module.repository.*;
 import com.first.function_module.repository.dao.ApartmentDao;
 import com.first.function_module.service.integrated.IntegrationService;
 import com.first.function_module.service.RentService;
+import com.first.function_module.service.integrated.impl.IntegrationServiceImpl;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -27,6 +38,8 @@ import static java.util.Objects.isNull;
 @Service
 public class RentServiceImpl implements RentService {
 
+    private Logger logger = LoggerFactory.getLogger(RentServiceImpl.class);
+
     private final IntegrationService integrationService;
     private final RatingRepository ratingRepository;
     private final ApartmentRepository apartmentRepository;
@@ -34,6 +47,7 @@ public class RentServiceImpl implements RentService {
     private final ApartmentDao apartmentDao;
     private final AddressRepository addressRepository;
     private final PhotoRepository photoRepository;
+    private final BookingRepository bookingRepository;
 
     public static final String APARTMENTS_NOT_FOUND = "апартаментов по условию поиска не обнаружено";
 
@@ -139,7 +153,7 @@ public class RentServiceImpl implements RentService {
         ApartmentDto apartmentDto = mapper.apartmentEntityToApartmentDtowithRating(apartment);
 
         int temp = 0;
-        System.out.println(rateList);
+
         for (RateEntity r : rateList) {
             temp = temp + r.getRating();
         }
@@ -151,14 +165,19 @@ public class RentServiceImpl implements RentService {
     }
 
     @Override
-    public String checkProductVersion() {
-        return integrationService.integrationWithProduct();
-    }
-
-
-    @Override
     public List<ApartmentDto> checkByLocation(String latitude, String longitude) {
-        return List.of();
+
+        logger.info("function_module.checkByLocation - > https://api.opencagedata.com/");
+
+        String city = integrationService.getIntegrationByGeoLocation(latitude, longitude).getResults().get(0).getComponents().getCity();
+
+        logger.info("function_module.checkByLocation < - https://api.opencagedata.com/");
+
+        List<ApartmentEntity> apartmentEntities = apartmentRepository.findByCity(city);
+
+        List<ApartmentDto> apartmentDtos = mapper.apartmentEntityToApartmentDto(apartmentEntities);
+
+        return apartmentDtos;
     }
 
 
@@ -174,23 +193,73 @@ public class RentServiceImpl implements RentService {
 
 
     @Override
-    public String rentApartment(ApartmentDto apartmentDto) {
+    public String rentApartment(ApartmentDto apartmentDto, UserInfoEntity userInfoEntity) {
+       BookingEntity bookingEntity =new BookingEntity();
+
+        bookingEntity.setSum(apartmentDto.getCost()*apartmentDto.getTimeOfRent());
+        bookingEntity.setBookingDays(apartmentDto.getCost());
+        bookingEntity.get(userInfoEntity);
+        prepareReport();
+        // todo дописать таблицу букинг_инфо
+
+        bookingRepository.save(bookingDto);
 
         return null;
 
     }
 
+    private void prepareReport() {
+
+        File file = new File("C:\\Users\\alex\\Downloads\\rentApartment\\rentApartment\\excel_template.xlsx");
+
+        List<AddressEntity> cityList = addressRepository.findbyCity("Москва");
+        try (FileInputStream fileInputStream = new FileInputStream(file);
+             Workbook workbook = new XSSFWorkbook(fileInputStream)) {
+            Sheet sheetAt = workbook.getSheetAt(0);
+            int countOfRow = 1;
+            for (AddressEntity a : cityList) {
+                Row row = sheetAt.createRow(countOfRow++);
+                row.createCell(0).setCellValue(a.getCity() + " ," + a.getStreet());
+                row.createCell(1).setCellValue(a.getBuildingNumber());
+                row.createCell(2).setCellValue(a.getCity());
+                row.createCell(3).setCellValue(a.getBuildingNumber());
+
+            }
+
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            workbook.write(fileOutputStream);
+
+            fileOutputStream.flush();
+
+            fileOutputStream.close();
+
+        } catch (IOException e) {
+            throw new RuntimeException("Проблема с выгрузкой отчета");
+        }
+    }
+
+
     @Override
     public String registerApartment(ApartmentDto apartmentDto, UserInfoEntity userInfoEntity) {
 
-        AddressEntity addressEntityByParam = addressRepository.searchAddressEntitiesByParam(apartmentDto.getStreet(), apartmentDto.getBuildingNumber());
 
-        if (!isNull(addressEntityByParam)) {
+
+        ApartmentEntity apartmentEntity = apartmentRepository
+                .findByCostAndAreaAndCountOfPeople
+                        (apartmentDto.getCost(), apartmentDto.getArea(), apartmentDto.getCountOfPeople());
+        if (!isNull(apartmentEntity)) {
             return "апартаменты уже существуют";
         }
-        AddressEntity addressEntity = mapper.addressEntityfromApartmentDto(apartmentDto);
 
-        apartmentRepository.save(addressEntity.getApartmentEntity());
+        ApartmentEntity apartmentToSave = mapper.apartmentDtoToApartmentEntity(apartmentDto);
+
+        AddressEntity addressEntity = new AddressEntity();
+        addressEntity.setCity(apartmentDto.getCity());
+        addressEntity.setStreet(apartmentDto.getStreet());
+        addressEntity.setBuildingNumber(apartmentDto.getBuildingNumber());
+        addressEntity.setApartmentEntity(apartmentToSave);
+
+        apartmentRepository.save(apartmentToSave);
         addressRepository.save(addressEntity);
 
         return userInfoEntity.getNickname() + " вы зарегистрировали новые апартаменты";

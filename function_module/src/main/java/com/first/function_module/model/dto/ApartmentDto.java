@@ -13,11 +13,11 @@ public class ApartmentDto {
     private Double countOfPeople;
     private String description;
     private LocalDateTime timeOfStartRent;
-    private LocalDateTime timeOfRent;
+    private Integer timeOfRent;
     private Double cost;
     private Double avgRate;
-    private String address;
     private String city;
     private String street;
     private String buildingNumber;
+
 }

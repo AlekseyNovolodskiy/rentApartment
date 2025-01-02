@@ -7,7 +7,7 @@ create table if not exists integration_info
 
 );
 
-create sequence integration_info_sequence start 4 increment 1;
+create sequence integration_info_sequence start 6 increment 1;
 
 insert into integration_info(id, url, name, key_info)
 values(1,'http://localhost:9097/version','version',null),

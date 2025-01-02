@@ -17,6 +17,7 @@ public class ProductController {
 
     @GetMapping("/version")
     public String returnVersion() {
+
         return "version";
     }
 

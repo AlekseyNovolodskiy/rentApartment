@@ -33,32 +33,36 @@ public class ApartmentController {
     }
 
     @PostMapping(RENT_APART)
-    public String rentApartment(@RequestBody ApartmentDto apartmentDto) {
+    public String rentApartment(@RequestBody ApartmentDto apartmentDto, @RequestHeader String token) {
+        UserInfoEntity userInfoEntity = checkValidTokenService.checkTokenForVAlid(token,"rentApartment");
 
-        return rentService.rentApartment(apartmentDto);
+        return rentService.rentApartment(apartmentDto,userInfoEntity);
     }
 
-    @PostMapping("/register_apartment")
+    @PostMapping(REGISTER_APARTMENT)
     public String registerApartment(@RequestHeader String token,
                                     @RequestBody ApartmentDto apartmentDto) {
-        UserInfoEntity userInfoEntity = checkValidTokenService.checkTokenForVAlid(token);
+        UserInfoEntity userInfoEntity = checkValidTokenService.checkTokenForVAlid(token,"registration");
         return rentService.registerApartment(apartmentDto, userInfoEntity);
     }
 
     @GetMapping(ADD_THE_COMMENT)
-    public String addTheComment(@RequestParam Long apartmentID,
+    public String addTheComment(@RequestHeader String token,
+                                @RequestParam Long apartmentID,
                                 @RequestParam Integer rating,
                                 @RequestParam(required = false) String comments) {
-        return ratingService.addRating(apartmentID, rating, comments);
+        UserInfoEntity userInfoEntity = checkValidTokenService.checkTokenForVAlid(token,"addComment");
+
+        return ratingService.addRating(apartmentID, rating, comments,token);
     }
 
-    @GetMapping("/show")
+    @GetMapping(SHOW_APARTMENT)
     public ApartmentDto showApartment(@RequestParam Long id) {
 
         return rentService.showApartment(id);
     }
 
-    @PostMapping("/addphoto")
+    @PostMapping(ADD_APARTMENT_PHOTO)
     public String AddPhoto(@RequestParam Long id, @RequestParam MultipartFile multipartFile) throws IOException {
 
         return rentService.addphoto(id, multipartFile);

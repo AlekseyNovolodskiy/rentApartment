@@ -1,17 +1,14 @@
 package com.first.function_module.service.integrated;
 
+import com.first.function_module.entity.UserInfoEntity;
 import com.first.function_module.model.dto.ApartmentDto;
+import com.first.function_module.model.dto.geo_dto.Response;
 
 import java.util.List;
 
 public interface IntegrationService {
 
-    String integrationWithProduct();
+    Response getIntegrationByGeoLocation(String latitude, String longitude);
 
-    String testSeconfMethod(String name, String phoneNumber, String token);
-
-    String testThirdMethodWithFilerReader(String name);
-
-    List<ApartmentDto> getIntegrationByGeoLocation(String latitude, String longitude);
-
+    void getIntegrationWithEmail(UserInfoEntity userByLogin);
 }
