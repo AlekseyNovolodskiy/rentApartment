@@ -19,7 +19,7 @@ create table IF not exists Delive_info
     juices_price      double precision
 );
 
-create sequence Delive_info_sequence start 4 increment 1;
+create sequence Delive_info_sequence start 3 increment 1;
 
 insert into Delive_info(id, fruits, fruits_amount, fruits_price, vegetables, vegetables_amount, vegetables_price, meat,
                         meat_amount, meat_price, juices, juices_amount, juices_price)

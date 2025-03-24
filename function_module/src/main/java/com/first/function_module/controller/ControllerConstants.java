@@ -14,4 +14,8 @@ public class ControllerConstants {
     public static final String SHOW_APARTMENT = BASE_URL_APART+"/show";
     public static final String ADD_APARTMENT_PHOTO = BASE_URL_APART+"/addphoto";
 
+    public static final String INTEGRATION_BASE_URL = "/integration";
+    public static final String INTEGRATION_GEOLOCATION_URL = "/geolocation";
+    public static final String INTEGRATION_DISCOUNT_URL = "/product_discount";
+
 }

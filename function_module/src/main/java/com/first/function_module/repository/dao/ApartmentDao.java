@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface ApartmentDao {
 
-    List<ApartmentEntity> findApartmentByCountOfPeople(Double countOfPeople);
+    List<ApartmentEntity> findApartmentByCountOfPeople(Integer countOfPeople);
 }

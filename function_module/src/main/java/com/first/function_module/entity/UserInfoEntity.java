@@ -1,14 +1,16 @@
 package com.first.function_module.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name = "user_info")
 @NoArgsConstructor
 public class UserInfoEntity {
@@ -44,14 +46,17 @@ public class UserInfoEntity {
     @OneToMany(mappedBy = "userInfoEntity", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<BookingEntity> booking;
 
+    @OneToMany(mappedBy = "userInfoEntity", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<UserPublicEntity> users;
 
-    public UserInfoEntity(String password, String login, String email, String nickname, String verification) {
-        this.dateRegistration = LocalDateTime.now();
+    public UserInfoEntity(Long id, LocalDateTime dateRegistration, String password, String login, String email, String nickname, String token, String verification) {
+        this.id = id;
+        this.dateRegistration = dateRegistration;
         this.password = password;
         this.login = login;
         this.email = email;
         this.nickname = nickname;
+        this.token = token;
         this.verification = verification;
-
     }
 }

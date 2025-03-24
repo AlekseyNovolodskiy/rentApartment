@@ -18,4 +18,10 @@ public class RentApartmentExceptionHandler {
 
     }
 
+    @ExceptionHandler(EmailSenderException.class)
+    public ResponseEntity<?> catchException(EmailSenderException e){
+        return ResponseEntity.ok(e.getMessage());
+
+    }
+
 }

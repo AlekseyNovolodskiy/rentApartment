@@ -34,3 +34,7 @@ com.netflix.discovery.shared.transport.TransportException: Cannot execute reques
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 2024-11-27 10:35:06.414 [http-nio-auto-1-exec-1] ERROR c.f.f.service.impl.AuthServiceImpl - Данный пользователь уже существует
 2024-11-27 12:27:37.235 [http-nio-auto-1-exec-1] ERROR c.f.f.service.impl.AuthServiceImpl - Данный пользователь уже существует
+2025-01-02 18:55:49.165 [http-nio-auto-1-exec-1] ERROR c.f.f.service.impl.AuthServiceImpl - Данный пользователь уже существует
+2025-01-16 18:48:25.165 [http-nio-auto-1-exec-1] ERROR c.f.f.service.impl.AuthServiceImpl - Данный пользователь уже существует
+2025-01-16 18:49:13.019 [http-nio-auto-1-exec-3] ERROR c.f.f.service.impl.AuthServiceImpl - Данный пользователь уже существует
+2025-01-21 16:06:36.092 [http-nio-auto-1-exec-6] ERROR c.f.f.service.impl.AuthServiceImpl - Данный пользователь уже существует

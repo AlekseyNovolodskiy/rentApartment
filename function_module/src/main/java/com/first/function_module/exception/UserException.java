@@ -2,8 +2,10 @@ package com.first.function_module.exception;
 
 import lombok.Data;
 
+import java.util.function.Supplier;
+
 @Data
-public class UserException extends RuntimeException {
+public class UserException extends RuntimeException  {
     private int exceptionCode;
 
 //    public UserException(String message, int exceptionCode) {
@@ -16,6 +18,7 @@ public class UserException extends RuntimeException {
         super(message);
 
     }
+
 }
 
 

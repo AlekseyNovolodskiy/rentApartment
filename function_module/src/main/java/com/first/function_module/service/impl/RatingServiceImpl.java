@@ -9,7 +9,6 @@ import com.first.function_module.repository.UserRepository;
 import com.first.function_module.service.RatingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RequiredArgsConstructor
 @Service
@@ -17,7 +16,6 @@ public class RatingServiceImpl implements RatingService {
 
     private final ApartmentRepository apartmentRepository;
     private final RatingRepository ratingRepository;
-    private final UserRepository userRepository;
     public static final String ADD_COMMENT = "Коментарий добавлен";
     public static final String RATING_MESSAGE_EXCEPTION = "Апартаментов не обнаружено";
 

@@ -2,10 +2,12 @@ package com.first.function_module.controller;
 
 import com.first.function_module.entity.UserInfoEntity;
 import com.first.function_module.model.dto.ApartmentDto;
+import com.first.function_module.model.dto.RentApartmentDto;
 import com.first.function_module.service.CheckValidTokenService;
 import com.first.function_module.service.RatingService;
 import com.first.function_module.service.RentService;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.User;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,7 +19,7 @@ import static com.first.function_module.controller.ControllerConstants.*;
 
 @RestController
 @RequiredArgsConstructor
-public class ApartmentController {
+public class    ApartmentController {
 
     private final RentService rentService;
     private final RatingService ratingService;
@@ -25,7 +27,7 @@ public class ApartmentController {
 
 
     @PostMapping(SEARCH_APART_BY_PARAM)
-    public List<ApartmentDto> searchApartment(@RequestParam(required = false) Double countOfPeople,
+    public List<ApartmentDto> searchApartment(@RequestParam(required = false) Integer countOfPeople,
                                               @RequestParam(required = false) Double area,
                                               @RequestParam(required = false) Double cost) {
 
@@ -33,16 +35,16 @@ public class ApartmentController {
     }
 
     @PostMapping(RENT_APART)
-    public String rentApartment(@RequestBody ApartmentDto apartmentDto, @RequestHeader String token) {
-        UserInfoEntity userInfoEntity = checkValidTokenService.checkTokenForVAlid(token,"rentApartment");
+    public String rentApartment(@RequestBody RentApartmentDto rentApartmentDto, @RequestHeader String token) {
+        UserInfoEntity userInfoEntity = checkValidTokenService.checkTokenForVAlid(token, "rentApartment");
 
-        return rentService.rentApartment(apartmentDto,userInfoEntity);
+        return rentService.rentApartment(rentApartmentDto, userInfoEntity);
     }
 
     @PostMapping(REGISTER_APARTMENT)
     public String registerApartment(@RequestHeader String token,
                                     @RequestBody ApartmentDto apartmentDto) {
-        UserInfoEntity userInfoEntity = checkValidTokenService.checkTokenForVAlid(token,"registration");
+        UserInfoEntity userInfoEntity = checkValidTokenService.checkTokenForVAlid(token, "registration");
         return rentService.registerApartment(apartmentDto, userInfoEntity);
     }
 
@@ -51,9 +53,9 @@ public class ApartmentController {
                                 @RequestParam Long apartmentID,
                                 @RequestParam Integer rating,
                                 @RequestParam(required = false) String comments) {
-        UserInfoEntity userInfoEntity = checkValidTokenService.checkTokenForVAlid(token,"addComment");
+        UserInfoEntity userInfoEntity = checkValidTokenService.checkTokenForVAlid(token, "addComment");
 
-        return ratingService.addRating(apartmentID, rating, comments,token);
+        return ratingService.addRating(apartmentID, rating, comments, token);
     }
 
     @GetMapping(SHOW_APARTMENT)
@@ -67,11 +69,5 @@ public class ApartmentController {
 
         return rentService.addphoto(id, multipartFile);
     }
-
-
-//    @GetMapping("/apartment")
-//    public List<ApartmentDto> apartment (@RequestParam Integer id){
-//       return apartmentService.showApartment(id);
-//    }
 }
 

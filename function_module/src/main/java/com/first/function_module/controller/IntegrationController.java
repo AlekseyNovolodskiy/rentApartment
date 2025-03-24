@@ -2,32 +2,33 @@ package com.first.function_module.controller;
 
 import com.first.function_module.model.dto.ApartmentDto;
 import com.first.function_module.service.RentService;
-import com.first.function_module.service.integrated.IntegrationService;
+import com.first.function_module.service.UserDiscountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.first.function_module.controller.ControllerConstants.*;
+
+
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/integration")
+
 public class IntegrationController {
 
+
     private final RentService rentService;
+    private final UserDiscountService discountService;
 
-    private final IntegrationService integrationService;
-
-
-    @GetMapping("/integration_with_two_parmaters")
-    public List<String> integrationWithParameres(@RequestParam String name, @RequestParam String number, @RequestHeader String token) {
-        return null;
-    }
-
-    @GetMapping("/geolocation")
+    @GetMapping(INTEGRATION_BASE_URL + INTEGRATION_GEOLOCATION_URL)
     public List<ApartmentDto> getInfoByLocation(@RequestParam String latitude, @RequestParam String longitude) {
 
         return rentService.checkByLocation(latitude, longitude);
     }
 
+    @PostMapping(INTEGRATION_BASE_URL+INTEGRATION_DISCOUNT_URL)
+    public String getDiscountFromProduct(@RequestBody String discountValue) {
+      return   discountService.discountResponce(discountValue);
+    }
 
 }

@@ -10,10 +10,8 @@ import java.time.LocalDateTime;
 public class ApartmentDto {
 
     private Double area;
-    private Double countOfPeople;
+    private Integer countOfPeople;
     private String description;
-    private LocalDateTime timeOfStartRent;
-    private Integer timeOfRent;
     private Double cost;
     private Double avgRate;
     private String city;

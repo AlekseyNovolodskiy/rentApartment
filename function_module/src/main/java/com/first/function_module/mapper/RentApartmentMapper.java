@@ -13,14 +13,11 @@ import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 public interface RentApartmentMapper {
 
     //    @Mapping(target = "countOfPeople", source = "count_of_people")
-    ApartmentEntity apartmentDtoToApartmentEntity(ApartmentDto apartmentDto);
+
 
     List<ApartmentDto> apartmentEntityToApartmentDto(List<ApartmentEntity> apartmentEntityList);
 
 
     ApartmentDto apartmentEntityToApartmentDtowithRating(ApartmentEntity apartmentEntity);
-
-    List<ApartmentDto> apartmentEntityToApartmentDto2(List<ApartmentEntity> apartmentEntities);
-
 
 }

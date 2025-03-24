@@ -24,14 +24,14 @@ public class AuthScheduler {
 
     @Scheduled(fixedDelay = 60000)
     private void checkValidToken (){
-        logger.info("планировщик актуальности токена начал работу");
+
         List<UserInfoEntity> users = userRepository.findUserInfoEntitiesByTokenIsNotNull();
         for (UserInfoEntity user : users) {
-            logger.info("проверка токена пользователя "+ user.getNickname());
+
             String token = user.getToken();
             LocalDateTime tokenTime = parseTokenInfo(token);
             if(checkDate(tokenTime)){
-                logger.info("токен пользователя "+ user.getNickname()+ " был удален");
+
                 user.setToken(null);
                 userRepository.save(user);
             }

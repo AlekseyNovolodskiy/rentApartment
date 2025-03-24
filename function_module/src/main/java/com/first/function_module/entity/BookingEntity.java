@@ -2,11 +2,15 @@ package com.first.function_module.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table (name = "booking_info")
 @NoArgsConstructor
@@ -21,8 +25,17 @@ public class BookingEntity {
     @JoinColumn(name = "user_id")
     private UserInfoEntity userInfoEntity;
 
-    private Double bookingDays;
+    private Integer bookingDays;
+
+    private LocalDateTime timeOfStartRent;
+
+    private LocalDateTime timeOfRegistration;
 
     private Double sum;
+
+    @ManyToOne
+    @JoinColumn(name = "apartment_id")
+    private ApartmentEntity apartmentEntity;
+
 
 }

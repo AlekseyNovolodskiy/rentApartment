@@ -8,7 +8,6 @@ import com.first.function_module.repository.UserRepository;
 import com.first.function_module.service.AuthService;
 import com.first.function_module.service.integrated.IntegrationService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -25,8 +24,10 @@ import static java.util.Objects.isNull;
 public class AuthServiceImpl implements AuthService {
 
     private Logger logger = LoggerFactory.getLogger(AuthServiceImpl.class);
+
     private final UserRepository userRepository;
     private final IntegrationService integrationService;
+
     private final String EMAIL_SENDER_IS_UNACTIVE = "отсутствует доступ к рассылке";
     public static final String USER_EXIST_EXEPTION = "Данный пользователь уже существует";
     public static final String YOU_ARE_REGISTERD = "вы зарегистрированы";
@@ -35,10 +36,6 @@ public class AuthServiceImpl implements AuthService {
     public static final String USER_NOT_FOUND = "Пользователь не найден";
     public static final String USER_VERIFIED = "Пользователь верифицирован";
 
-
-
-
-
     @Override
     public String registrationUser(UserInfoDto userInfoDto) {
 
@@ -46,7 +43,7 @@ public class AuthServiceImpl implements AuthService {
         UserInfoEntity userByNickname = userRepository.findUserInfoEntityByNickname(userInfoDto.getNickname());
         if (!isNull(userByNickname)) {
             logger.error(USER_EXIST_EXEPTION);
-            throw new UserException(USER_EXIST_EXEPTION);
+            return USER_EXIST_EXEPTION;
 
         }
         UserInfoEntity userByLogin = userRepository.findUserInfoEntitiesByEmail(userInfoDto.getEmail());
@@ -86,7 +83,7 @@ public class AuthServiceImpl implements AuthService {
         if (!userByLogin.getVerification().equals("verified")) {
 
             try {
-                integrationService.getIntegrationWithEmail(userByLogin);
+                integrationService.getIntegrationWithEmailVerification(userByLogin);
             } catch (Exception e) {
                 throw new UserException(EMAIL_SENDER_IS_UNACTIVE);
             }

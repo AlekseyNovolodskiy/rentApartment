@@ -16,7 +16,7 @@ public class ApartmentDaoImpl implements ApartmentDao{
    private final JdbcTemplate jdbcTemplate;
    public static final String APARTMENT_QUERY = "Select * from apartment_info where count_of_people = %s";
     @Override
-    public List<ApartmentEntity> findApartmentByCountOfPeople(Double countOfPeople) {
+    public List<ApartmentEntity> findApartmentByCountOfPeople(Integer countOfPeople) {
 
         List<Map<String, Object>> maps = jdbcTemplate.queryForList(String.format(APARTMENT_QUERY, countOfPeople));
         return null;

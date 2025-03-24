@@ -1,10 +1,9 @@
 package com.example.rent_sender.controller;
 
+import com.example.rent_sender.model.UserDto;
 import com.example.rent_sender.service.EmailSender;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -13,9 +12,9 @@ public class ControllerVerification {
     private final EmailSender emailSender;
 
 
-    @GetMapping("/verify2")
-    public void verifyLink(@RequestParam String marker, @RequestParam String userLogin) {
-        emailSender.emailSender(marker,userLogin);
+    @PostMapping("/verify_auth")
+    public void verifyLink(@RequestParam String marker, @RequestBody UserDto userDto) {
+        emailSender.emailSender(marker,userDto);
 
     }
 }
